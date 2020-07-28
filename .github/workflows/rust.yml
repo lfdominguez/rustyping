@@ -17,6 +17,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Oping dependency
-      run: sudo apt install liboping
+      run: sudo apt install liboping-dev
     - name: Build
       run: cargo build --release --verbose
