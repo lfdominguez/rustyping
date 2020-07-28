@@ -2,7 +2,7 @@ RustyPing
 =========
 Simple Rust application to send ICMP ping request to a set of hosts defined on a Redis database. Expose the info as metric HTTP Server for Prometheus.
 
-Focused on datacenters to get a globa view of ICMP latency over all hosts.
+Focused on datacenters to get a global view of ICMP latency over all hosts.
 
 ## Metrics
 
