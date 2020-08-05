@@ -6,7 +6,8 @@ Simple Rust application to send ICMP ping request to a set of hosts defined on a
 
 Focused on datacenters to get a global view of ICMP latency over all hosts.
 
-    NOTE: Only support Linux to deploy the software. If you want Windows support (or another platform) then you can push a request.
+    Only support Linux to deploy the software.
+    If you want Windows support (or another platform) then you can push a request.
 
 ## Metrics
 
