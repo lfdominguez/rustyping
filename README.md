@@ -6,6 +6,8 @@ Simple Rust application to send ICMP ping request to a set of hosts defined on a
 
 Focused on datacenters to get a global view of ICMP latency over all hosts.
 
+    NOTE: Only support Linux to deploy the software. If you want Windows support (or another platform) then you can push a request.
+
 ## Metrics
 
 | Metric | Description |
@@ -43,6 +45,6 @@ The Redis server need to contain a SET with the name `rustyping:targets` with me
 
 ## Grafana example
 
-You can use grafana to view the info saved with Prometheus. Example dashboard can found on `grafana` folder.
+You can use grafana to view the information saved in Prometheus. Example dashboard can found on `grafana` folder.
 
 ![Grafana Dashboard example](grafana/grafana_dashboard.png)
