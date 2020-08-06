@@ -1,25 +1,28 @@
-use slog::Logger;
-use nix::ifaddrs::{getifaddrs};
+use nix::ifaddrs::getifaddrs;
+use nix::sys::socket::SockAddr::Inet;
 use nix::unistd::gethostname;
-use nix::sys::socket::{SockAddr::Inet};
+use slog::Logger;
 
 pub fn ifaddrs(ping_thread_log: Logger) -> Vec<String> {
     let mut local_inet_address = vec![];
 
     for ifaddr in getifaddrs().unwrap() {
         match ifaddr.address {
-            Some(address) => {
-                match address {
-                    Inet(_) => {
-                        let mut inet_address = address.to_string();
+            Some(address) => match address {
+                Inet(_) => {
+                    let mut inet_address = address.to_string();
 
-                        inet_address.truncate(inet_address.len() - 2);
+                    inet_address.truncate(inet_address.len() - 2);
 
-                        trace!(ping_thread_log, "interface {} address {}", ifaddr.interface_name, inet_address);
-                        local_inet_address.push(inet_address);
-                    },
-                    _ => {}
+                    trace!(
+                        ping_thread_log,
+                        "interface {} address {}",
+                        ifaddr.interface_name,
+                        inet_address
+                    );
+                    local_inet_address.push(inet_address);
                 }
+                _ => {}
             },
             None => {}
         }

@@ -14,7 +14,11 @@ impl PartialEq for Host {
 }
 
 pub fn get_redis_hosts(ping_thread_log: Logger) -> Result<Vec<Host>, ()> {
-    let redis_host = crate::global_config::SETTINGS.read().unwrap().get::<String>("redis_host").unwrap();
+    let redis_host = crate::global_config::SETTINGS
+        .read()
+        .unwrap()
+        .get::<String>("redis_host")
+        .unwrap();
 
     redis::Client::open(format!("redis://{}/", redis_host))
     .and_then(|client| {

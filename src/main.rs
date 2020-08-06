@@ -11,16 +11,16 @@ use hyper::{
     Server,
 };
 
-use std::thread;
 use slog::Drain;
+use std::thread;
 
-mod utils;
-mod redis;
-mod prom;
-mod web;
-mod task;
 mod app_flags;
 mod global_config;
+mod prom;
+mod redis;
+mod task;
+mod utils;
+mod web;
 
 #[tokio::main]
 async fn main() {
@@ -29,14 +29,11 @@ async fn main() {
     let _guard = slog_envlogger::init().unwrap();
 
     let decorator = slog_term::TermDecorator::new().build();
-    let drain = slog_term::FullFormat::new(decorator)
-        .build()
-        .fuse();
+    let drain = slog_term::FullFormat::new(decorator).build().fuse();
     let drain = slog_async::Async::new(drain).build().fuse();
 
     let root_log = slog::Logger::root(drain, o!());
     let ping_thread_log = root_log.new(o!("component" => "ping_thread"));
-
 
     // Configure Flags
     match app_flags::configure() {
@@ -49,21 +46,28 @@ async fn main() {
 
     // Dedicated thread to ping work
     thread::spawn(move || {
-        let mut historical_hosts= std::collections::HashMap::<String, String>::new();
+        let mut historical_hosts = std::collections::HashMap::<String, String>::new();
         let hostname = utils::host_name();
 
         let config_reader = global_config::SETTINGS.read().unwrap();
 
         loop {
             redis::get_redis_hosts(ping_thread_log.clone())
-            .and_then(|hosts| {
-                task::do_ping_task(ping_thread_log.clone(), &mut historical_hosts, hosts, hostname.clone());
+                .and_then(|hosts| {
+                    task::do_ping_task(
+                        ping_thread_log.clone(),
+                        &mut historical_hosts,
+                        hosts,
+                        hostname.clone(),
+                    );
 
-                Ok(())
-            })
-            .unwrap_or_default();
+                    Ok(())
+                })
+                .unwrap_or_default();
 
-            thread::sleep(std::time::Duration::from_secs(config_reader.get("ping_interval").unwrap()));
+            thread::sleep(std::time::Duration::from_secs(
+                config_reader.get("ping_interval").unwrap(),
+            ));
         }
     });
 
