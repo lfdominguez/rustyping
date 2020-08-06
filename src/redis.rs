@@ -13,7 +13,7 @@ impl PartialEq for Host {
     }
 }
 
-pub fn get_redis_hosts(ping_thread_log: Logger) -> Result<Vec<Host>, ()> {
+pub fn get_redis_hosts(ping_thread_log: &Logger) -> Result<Vec<Host>, ()> {
     let redis_host = crate::global_config::SETTINGS
         .read()
         .unwrap()

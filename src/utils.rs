@@ -3,7 +3,7 @@ use nix::sys::socket::SockAddr::Inet;
 use nix::unistd::gethostname;
 use slog::Logger;
 
-pub fn ifaddrs(ping_thread_log: Logger) -> Vec<String> {
+pub fn ifaddrs(ping_thread_log: &Logger) -> Vec<String> {
     let mut local_inet_address = vec![];
 
     for ifaddr in getifaddrs().unwrap() {
@@ -28,7 +28,7 @@ pub fn ifaddrs(ping_thread_log: Logger) -> Vec<String> {
 }
 
 pub fn host_name() -> String {
-    let mut buf = [0u8; 128];
+    let mut buf = [0_u8; 128];
     let hostname_cstr = gethostname(&mut buf).expect("Failed getting hostname");
     let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
 

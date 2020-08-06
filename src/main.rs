@@ -52,14 +52,9 @@ async fn main() {
         let config_reader = global_config::SETTINGS.read().unwrap();
 
         loop {
-            redis::get_redis_hosts(ping_thread_log.clone())
+            redis::get_redis_hosts(&ping_thread_log)
                 .map(|hosts| {
-                    task::do_ping_task(
-                        ping_thread_log.clone(),
-                        &mut historical_hosts,
-                        hosts,
-                        hostname.clone(),
-                    );
+                    task::do_ping(&ping_thread_log, &mut historical_hosts, hosts, &hostname);
                 })
                 .unwrap_or_default();
 

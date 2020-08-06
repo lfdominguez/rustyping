@@ -4,13 +4,13 @@ use fastping_rs::Pinger;
 use slog::Logger;
 use std::collections::HashMap;
 
-pub fn do_ping_task(
-    ping_thread_log: Logger,
+pub fn do_ping(
+    ping_thread_log: &Logger,
     historical_hosts: &mut HashMap<String, String>,
     hosts: Vec<Host>,
-    hostname: String,
+    hostname: &str,
 ) {
-    let local_inet_address = crate::utils::ifaddrs(ping_thread_log.clone());
+    let local_inet_address = crate::utils::ifaddrs(ping_thread_log);
 
     let config_reader = crate::global_config::SETTINGS.read().unwrap();
 
@@ -42,16 +42,16 @@ pub fn do_ping_task(
 
     for deleted_host in deleted_hosts {
         crate::prom::PING_LATENCY_HISTOGRAM
-            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], &hostname[..]])
+            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], hostname])
             .unwrap_or_default();
         crate::prom::PING_ERROR_COUNT
-            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], &hostname[..]])
+            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], hostname])
             .unwrap_or_default();
         crate::prom::PING_LAST
-            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], &hostname[..]])
+            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], hostname])
             .unwrap_or_default();
         crate::prom::HOST_UP
-            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], &hostname[..]])
+            .remove_label_values(&[&deleted_host.0[..], &deleted_host.1[..], hostname])
             .unwrap_or_default();
     }
 
@@ -99,21 +99,21 @@ pub fn do_ping_task(
                             .with_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .inc();
                         crate::prom::PING_LAST
                             .remove_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .unwrap_or_default();
                         crate::prom::HOST_UP
                             .with_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .set(0.0);
                         warn!(ping_thread_log, "No response from host"; "host" => addr_str);
@@ -126,21 +126,21 @@ pub fn do_ping_task(
                             .with_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .observe(millis as f64);
                         crate::prom::PING_LAST
                             .with_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .set(millis as f64);
                         crate::prom::HOST_UP
                             .with_label_values(&[
                                 &addr_str[..],
                                 &historical_hosts[&addr_str][..],
-                                &hostname[..],
+                                hostname,
                             ])
                             .set(1.0);
 
