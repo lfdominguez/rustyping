@@ -53,15 +53,13 @@ async fn main() {
 
         loop {
             redis::get_redis_hosts(ping_thread_log.clone())
-                .and_then(|hosts| {
+                .map(|hosts| {
                     task::do_ping_task(
                         ping_thread_log.clone(),
                         &mut historical_hosts,
                         hosts,
                         hostname.clone(),
                     );
-
-                    Ok(())
                 })
                 .unwrap_or_default();
 

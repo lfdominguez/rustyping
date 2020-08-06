@@ -4,11 +4,9 @@ use std::net::{Ipv4Addr, Ipv6Addr};
 fn is_positive(v: String) -> Result<(), String> {
     if v.parse::<u64>().is_ok() {
         return Ok(());
-    } else {
-        if let Ok(f) = v.parse::<f64>() {
-            if f > 0_f64 {
-                return Ok(());
-            }
+    } else if let Ok(f) = v.parse::<f64>() {
+        if f > 0_f64 {
+            return Ok(());
         }
     }
     Err(format!("{} isn't a positive number", &*v))
@@ -59,22 +57,22 @@ pub fn configure() -> Result<(), String> {
 
     redis_host_str
         .parse::<Ipv4Addr>()
-        .and_then(|ipv4| {
+        .map(|ipv4| {
             is_v4 = true;
 
-            Ok(ipv4)
+            ipv4
         })
-        .unwrap_or(Ipv4Addr::new(127, 0, 0, 1));
+        .unwrap_or_else(|_| Ipv4Addr::new(127, 0, 0, 1));
 
     if !is_v4 {
         redis_host_str
             .parse::<Ipv6Addr>()
-            .and_then(|ipv6| {
+            .map(|ipv6| {
                 is_v6 = true;
 
-                Ok(ipv6)
+                ipv6
             })
-            .unwrap_or(Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1));
+            .unwrap_or_else(|_| Ipv6Addr::new(0, 0, 0, 0, 0, 0, 0, 1));
     }
 
     if !is_v4 && !is_v6 {

@@ -63,9 +63,7 @@ pub fn get_redis_hosts(ping_thread_log: Logger) -> Result<Vec<Host>, ()> {
             }
         })
     })
-    .or_else::<(), _>(|error| {
+    .map_err::<(), _>(|error| {
         error!(ping_thread_log, "Error on Redis connection: {}", error);
-
-        Err(())
     })
 }
